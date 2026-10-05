@@ -1,346 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tamagotchi Club: Sahur, Kirk & Mirsab</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Tajawal:wght@500;700;900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Fredoka', cursive, sans-serif;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-        }
-        .arabic-font {
-            font-family: 'Tajawal', sans-serif !important;
-        }
-        .tamagotchi-screen {
-            background: #e2f1af;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.15);
-        }
-        .character-bounce {
-            animation: bounce 2s infinite ease-in-out;
-        }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-8px) scale(1.03); }
-        }
-        .sparkle {
-            animation: pulse 1.5s infinite;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tung Tung Tung Sahur: Tiny Care Club</title>
+<style>
+:root{--bg:#101522;--panel:#192235;--accent:#ffcc55;--text:#f5f7ff;--muted:#aeb8cf;--good:#5be39b;--bad:#ff6b7a}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at top,#273452,#0d111b 70%);color:var(--text);min-height:100vh}
+button{font:inherit;cursor:pointer;border:0}.app{max-width:1050px;margin:auto;padding:20px}.title{text-align:center}.title h1{margin:5px 0;font-size:clamp(28px,5vw,48px)}.title p{color:var(--muted);margin-top:4px}
+.screen{display:none}.screen.active{display:block}.character-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:25px}.char-card{background:var(--panel);border:2px solid #2d3b57;border-radius:20px;padding:22px;text-align:center;transition:.2s}.char-card:hover{transform:translateY(-4px);border-color:var(--accent)}.avatar{font-size:78px;margin:12px}.char-card h2{margin:8px}.char-card p{color:var(--muted);min-height:42px}.pick{background:var(--accent);padding:11px 18px;border-radius:12px;font-weight:800}
+.game{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:18px}.pet-panel,.side{background:rgba(25,34,53,.95);border:1px solid #30405e;border-radius:22px;padding:20px}.pet-stage{height:390px;border-radius:18px;background:linear-gradient(#263452,#182033);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}.pet{font-size:155px;filter:drop-shadow(0 12px 8px #0007);user-select:none}.speech{position:absolute;top:18px;left:18px;right:18px;text-align:center;background:#fff;color:#171b25;padding:9px 13px;border-radius:14px;font-weight:700}
+.stats{display:grid;gap:9px;margin:16px 0}.stat{display:grid;grid-template-columns:75px 1fr 45px;align-items:center;gap:8px}.bar{height:12px;background:#0d1320;border-radius:99px;overflow:hidden}.fill{height:100%;width:50%;background:var(--good);transition:.3s}.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.action{padding:13px;border-radius:13px;background:#2a3853;color:white;font-weight:750}.action:hover{background:#3b4d70}.dress-title{margin-top:20px}.outfits{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.outfit{padding:10px;background:#242f46;border-radius:12px;color:#fff}.outfit.selected{outline:2px solid var(--accent)}.back{margin-top:14px;background:#303c55;color:white;padding:10px 14px;border-radius:12px}
+.log{margin-top:14px;max-height:120px;overflow:auto;color:var(--muted);font-size:14px}.arabic{direction:rtl;font-family:Tahoma,Arial,sans-serif}.arabic .pet-stage{direction:ltr}.arabic button{font-family:Tahoma,Arial,sans-serif}
+@media(max-width:760px){.character-grid,.game{grid-template-columns:1fr}.pet-stage{height:300px}.pet{font-size:115px}.outfits{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body>
+<div class="app" id="app">
+  <div class="title"><h1 id="mainTitle">🥁 Tung Tung Tung: Tiny Care Club</h1><p id="subtitle">Feed them. Wash them. Dress them. Keep them happy.</p></div>
 
-    <!-- Game Container -->
-    <div id="game-card" class="w-full max-w-md bg-white rounded-3xl shadow-2xl border-4 border-pink-300 p-6 flex flex-col items-center relative overflow-hidden">
-        
-        <!-- Header & Character Selector -->
-        <h1 id="ui-title" class="text-2xl font-black text-pink-600 mb-3 text-center tracking-wide">
-            ✨ TAMAGOTCHI PET CARE ✨
-        </h1>
-
-        <div class="grid grid-cols-3 gap-2 w-full mb-4">
-            <button onclick="selectCharacter('tung')" id="btn-tung" class="char-btn p-2 rounded-xl border-2 border-pink-400 bg-pink-100 hover:bg-pink-200 transition text-xs font-bold text-gray-800 text-center">
-                🥁 <span id="name-tung">Tung Tung Sahur</span>
-            </button>
-            <button onclick="selectCharacter('kirk')" id="btn-kirk" class="char-btn p-2 rounded-xl border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 transition text-xs font-bold text-gray-800 text-center">
-                🎯 <span id="name-kirk">Charlie Kirk</span>
-            </button>
-            <button onclick="selectCharacter('mirsab')" id="btn-mirsab" class="char-btn p-2 rounded-xl border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 transition text-xs font-bold text-gray-800 text-center">
-                🌙 <span id="name-mirsab">Mirsab Ali</span>
-            </button>
-        </div>
-
-        <!-- Virtual Pet Screen -->
-        <div class="w-full tamagotchi-screen rounded-2xl border-4 border-lime-600 p-4 relative mb-4 flex flex-col items-center min-h-[280px] justify-between">
-            
-            <!-- Speech Bubble / Status Alert -->
-            <div id="speech-bubble" class="bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-gray-700 shadow-sm border border-lime-500 mb-2 text-center max-w-[90%]">
-                Tung Tung Tung Sahur! Wake up! 🥁
-            </div>
-
-            <!-- Pet Character Display -->
-            <div class="relative w-36 h-36 flex items-center justify-center my-2">
-                <!-- Base Avatar Placeholder -->
-                <div id="character-avatar" class="character-bounce text-7xl select-none relative z-10 filter drop-shadow-md">
-                    🥁
-                </div>
-                <!-- Outfit Overlay Badge -->
-                <div id="outfit-badge" class="absolute -top-2 -right-2 bg-yellow-300 border-2 border-yellow-600 rounded-full w-10 h-10 flex items-center justify-center text-xl shadow z-20">
-                    👤
-                </div>
-            </div>
-
-            <!-- Stat Bars -->
-            <div class="w-full space-y-1.5 text-xs font-bold">
-                <div>
-                    <div class="flex justify-between text-gray-700 mb-0.5">
-                        <span id="label-hunger">🍖 Hunger</span>
-                        <span id="val-hunger">80%</span>
-                    </div>
-                    <div class="w-full bg-lime-200 rounded-full h-3 border border-lime-600 overflow-hidden">
-                        <div id="bar-hunger" class="bg-red-500 h-full transition-all duration-300" style="width: 80%"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-gray-700 mb-0.5">
-                        <span id="label-hygiene">🧼 Cleanliness</span>
-                        <span id="val-hygiene">90%</span>
-                    </div>
-                    <div class="w-full bg-lime-200 rounded-full h-3 border border-lime-600 overflow-hidden">
-                        <div id="bar-hygiene" class="bg-blue-500 h-full transition-all duration-300" style="width: 90%"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-gray-700 mb-0.5">
-                        <span id="label-happiness">💖 Happiness</span>
-                        <span id="val-happiness">100%</span>
-                    </div>
-                    <div class="w-full bg-lime-200 rounded-full h-3 border border-lime-600 overflow-hidden">
-                        <div id="bar-happiness" class="bg-pink-500 h-full transition-all duration-300" style="width: 100%"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="grid grid-cols-3 gap-2 w-full mb-3">
-            <button onclick="feedPet()" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold py-2 px-3 rounded-xl shadow border-b-4 border-amber-600 active:translate-y-0.5 transition flex items-center justify-center gap-1 text-sm">
-                🍗 <span id="btn-feed">Feed</span>
-            </button>
-            <button onclick="washPet()" class="bg-cyan-400 hover:bg-cyan-500 text-cyan-950 font-bold py-2 px-3 rounded-xl shadow border-b-4 border-cyan-600 active:translate-y-0.5 transition flex items-center justify-center gap-1 text-sm">
-                🧼 <span id="btn-wash">Wash</span>
-            </button>
-            <button onclick="playPet()" class="bg-emerald-400 hover:bg-emerald-500 text-emerald-950 font-bold py-2 px-3 rounded-xl shadow border-b-4 border-emerald-600 active:translate-y-0.5 transition flex items-center justify-center gap-1 text-sm">
-                🎮 <span id="btn-play">Play</span>
-            </button>
-        </div>
-
-        <!-- Wardrobe / Outfit Selector -->
-        <div class="w-full bg-purple-50 rounded-2xl p-3 border-2 border-purple-200">
-            <h2 id="label-wardrobe" class="text-xs font-extrabold text-purple-700 mb-2 uppercase tracking-wider text-center">
-                👗 Dressing Room / Wardrobe
-            </h2>
-            <div class="grid grid-cols-4 gap-1.5">
-                <button onclick="changeOutfit('default')" class="bg-white hover:bg-purple-100 border border-purple-300 rounded-lg py-1.5 text-xs font-bold text-purple-800 text-center">
-                    👤 <span id="outfit-default">Default</span>
-                </button>
-                <button onclick="changeOutfit('fursuit')" class="bg-white hover:bg-purple-100 border border-purple-300 rounded-lg py-1.5 text-xs font-bold text-purple-800 text-center">
-                    🦊 <span id="outfit-fursuit">Fursuit</span>
-                </button>
-                <button onclick="changeOutfit('maid')" class="bg-white hover:bg-purple-100 border border-purple-300 rounded-lg py-1.5 text-xs font-bold text-purple-800 text-center">
-                    🧹 <span id="outfit-maid">Maid</span>
-                </button>
-                <button onclick="changeOutfit('suit')" class="bg-white hover:bg-purple-100 border border-purple-300 rounded-lg py-1.5 text-xs font-bold text-purple-800 text-center">
-                    🎩 <span id="outfit-suit">Tuxedo</span>
-                </button>
-            </div>
-        </div>
-
+  <section id="select" class="screen active">
+    <div class="character-grid">
+      <div class="char-card">
+        <div class="avatar">🥁</div><h2>Tung Tung Tung Sahur</h2>
+        <p>The legendary drum buddy who needs snacks and a good bath.</p>
+        <button class="pick" onclick="choose('tung')">Choose</button>
+      </div>
+      <div class="char-card">
+        <div class="avatar">🧑‍💼</div><h2>Charlie Kirk</h2>
+        <p>A fictionalized game character in this silly virtual-pet parody.</p>
+        <button class="pick" onclick="choose('charlie')">Choose</button>
+      </div>
+      <div class="char-card arabic">
+        <div class="avatar">🧑</div><h2>ميرساب علي</h2>
+        <p>وضع عربي بالكامل — كل النصوص والأزرار باللغة العربية.</p>
+        <button class="pick" onclick="choose('mirsab')">اختيار</button>
+      </div>
     </div>
+  </section>
 
-    <script>
-        // Game State
-        const state = {
-            character: 'tung', // 'tung', 'kirk', 'mirsab'
-            hunger: 80,
-            hygiene: 90,
-            happiness: 100,
-            outfit: 'default',
-            lang: 'en'
-        };
+  <section id="game" class="screen">
+    <div class="game">
+      <div class="pet-panel">
+        <h2 id="petName"></h2>
+        <div class="pet-stage"><div class="speech" id="speech"></div><div class="pet" id="pet">🥁</div></div>
+        <div class="stats">
+          <div class="stat"><span id="foodLabel">Food</span><div class="bar"><div class="fill" id="food"></div></div><b id="foodN"></b></div>
+          <div class="stat"><span id="cleanLabel">Clean</span><div class="bar"><div class="fill" id="clean"></div></div><b id="cleanN"></b></div>
+          <div class="stat"><span id="funLabel">Fun</span><div class="bar"><div class="fill" id="fun"></div></div><b id="funN"></b></div>
+          <div class="stat"><span id="energyLabel">Energy</span><div class="bar"><div class="fill" id="energy"></div></div><b id="energyN"></b></div>
+        </div>
+        <div class="actions">
+          <button class="action" onclick="act('feed')" id="feedBtn">🍕 Feed</button>
+          <button class="action" onclick="act('wash')" id="washBtn">🧼 Wash</button>
+          <button class="action" onclick="act('play')" id="playBtn">🎮 Play</button>
+          <button class="action" onclick="act('sleep')" id="sleepBtn">😴 Sleep</button>
+        </div>
+        <div class="log" id="log"></div>
+        <button class="back" onclick="backToSelect()" id="backBtn">← Change character</button>
+      </div>
 
-        // Translations Dictionary
-        const i18n = {
-            en: {
-                title: "✨ TAMAGOTCHI PET CARE ✨",
-                tungName: "Tung Tung Sahur",
-                kirkName: "Charlie Kirk",
-                mirsabName: "Mirsab Ali",
-                hunger: "🍖 Hunger",
-                hygiene: "🧼 Cleanliness",
-                happiness: "💖 Happiness",
-                feed: "Feed",
-                wash: "Wash",
-                play: "Play",
-                wardrobe: "👗 Dressing Room / Wardrobe",
-                outfitDefault: "Normal",
-                outfitFursuit: "Fursuit",
-                outfitMaid: "Maid",
-                outfitSuit: "Tuxedo",
-                quotes: {
-                    tung: ["Tung Tung Tung Sahur! Wake up!", "Time for Sahur! 🥁", "Feelin' cute in this outfit!"],
-                    kirk: ["Turning point Tamagotchi!", "Let's debate the best pet food.", "Facts don't care about your hunger!"],
-                    mirsab: ["Welcome my friends!", "Ready to play!", "Looking good!"]
-                }
-            },
-            ar: {
-                title: "✨ لعبة العناية بالتاماجوتشي ✨",
-                tungName: "تونغ تونغ سحور",
-                kirkName: "تشارلي كيرك",
-                mirsabName: "ميرساب علي",
-                hunger: "🍖 الجوع",
-                hygiene: "🧼 النظافة",
-                happiness: "💖 السعادة",
-                feed: "إطعام",
-                wash: "تنظيف",
-                play: "لعب",
-                wardrobe: "👗 خزانة الملابس والزي",
-                outfitDefault: "عادي",
-                outfitFursuit: "بدلة فرو",
-                outfitMaid: "خادمة",
-                outfitSuit: "بدلة رسمية",
-                quotes: {
-                    tung: ["تونغ تونغ تونغ سحور! استيقظ!", "حان وقت السحور! 🥁", "مظهر رائع اليوم!"],
-                    kirk: ["نقطة التحول تاماجوتشي!", "دعنا نتناقش حول أفضل طعام للحيوانات.", "الحقائق لا تهتم بجوعك!"],
-                    mirsab: ["أهلاً وسهلاً بكم جميعا!", "جاهز للعب والمرح!", "أنظف وأجمل إطلالة!"]
-                }
-            }
-        };
+      <div class="side">
+        <h2 id="wardrobeTitle">👕 Wardrobe</h2>
+        <p id="wardrobeText">Pick an outfit. Costumes are purely cosmetic.</p>
+        <div class="outfits">
+          <button class="outfit selected" onclick="dress('default',this)">🧸 Normal</button>
+          <button class="outfit" onclick="dress('fur',this)">🐾 Fursuit</button>
+          <button class="outfit" onclick="dress('maid',this)">🧹 Maid</button>
+          <button class="outfit" onclick="dress('rave',this)">🌈 Rave</button>
+          <button class="outfit" onclick="dress('chef',this)">👨‍🍳 Chef</button>
+          <button class="outfit" onclick="dress('astronaut',this)">🚀 Space</button>
+        </div>
+        <h2 id="statusTitle">✨ Status</h2>
+        <p id="status"></p>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+const chars={
+  tung:{name:"Tung Tung Tung Sahur",emoji:"🥁",speech:"TUNG TUNG TUNG! SAHUR!",lang:"en"},
+  charlie:{name:"Charlie Kirk",emoji:"🧑‍💼",speech:"Time for virtual-pet duties!",lang:"en"},
+  mirsab:{name:"ميرساب علي",emoji:"🧑",speech:"مرحباً! هيا نعتني بي!",lang:"ar"}
+};
+const outfits={default:"",fur:"🦊",maid:"🧹",rave:"🌈",chef:"👨‍🍳",astronaut:"🧑‍🚀"};
+let state={type:"tung",food:75,clean:75,fun:75,energy:75,outfit:"default"};
 
-        // Character Visual Representations
-        const avatars = {
-            tung: "🥁",
-            kirk: "🎯",
-            mirsab: "🌙"
-        };
-
-        const outfitBadges = {
-            default: "👤",
-            fursuit: "🦊",
-            maid: "🧹",
-            suit: "🎩"
-        };
-
-        function selectCharacter(char) {
-            state.character = char;
-            
-            // Highlight Button
-            document.querySelectorAll('.char-btn').forEach(btn => {
-                btn.classList.remove('bg-pink-100', 'border-pink-400');
-                btn.classList.add('bg-gray-100', 'border-gray-300');
-            });
-            const selectedBtn = document.getElementById(`btn-${char}`);
-            selectedBtn.classList.remove('bg-gray-100', 'border-gray-300');
-            selectedBtn.classList.add('bg-pink-100', 'border-pink-400');
-
-            // Switch UI Language based on character
-            if (char === 'mirsab') {
-                state.lang = 'ar';
-                document.body.classList.add('arabic-font');
-                document.getElementById('game-card').setAttribute('dir', 'rtl');
-            } else {
-                state.lang = 'en';
-                document.body.classList.remove('arabic-font');
-                document.getElementById('game-card').setAttribute('dir', 'ltr');
-            }
-
-            updateUI();
-            triggerSpeech(getRandomQuote());
-        }
-
-        function changeOutfit(outfit) {
-            state.outfit = outfit;
-            state.happiness = Math.min(100, state.happiness + 10);
-            updateUI();
-            
-            const txt = state.lang === 'ar' ? `تم تغيير الزي إلى ${i18n.ar['outfit' + capitalize(outfit)]}!` : `Changed outfit to ${i18n.en['outfit' + capitalize(outfit)]}!`;
-            triggerSpeech(txt);
-        }
-
-        function capitalize(s) {
-            return s.charAt(0).toUpperCase() + s.slice(1);
-        }
-
-        function feedPet() {
-            if (state.hunger >= 100) {
-                triggerSpeech(state.lang === 'ar' ? "أنا شبعان جداً!" : "I'm already full!");
-                return;
-            }
-            state.hunger = Math.min(100, state.hunger + 25);
-            updateUI();
-            triggerSpeech(state.lang === 'ar' ? "يممم! طعام لديد! 🍎" : "Yum! Delicious food! 🍎");
-        }
-
-        function washPet() {
-            if (state.hygiene >= 100) {
-                triggerSpeech(state.lang === 'ar' ? "أنا نظيف بالفعل! ✨" : "I'm already super clean! ✨");
-                return;
-            }
-            state.hygiene = 100;
-            updateUI();
-            triggerSpeech(state.lang === 'ar' ? "فقاعات صابون رائعة! 🧼" : "Squeaky clean bubbles! 🧼");
-        }
-
-        function playPet() {
-            if (state.hunger < 15) {
-                triggerSpeech(state.lang === 'ar' ? "أنا جائع جداً للعب..." : "Too hungry to play...");
-                return;
-            }
-            state.happiness = Math.min(100, state.happiness + 20);
-            state.hunger = Math.max(0, state.hunger - 10);
-            updateUI();
-            triggerSpeech(state.lang === 'ar' ? "هذا ممتع للغاية! 🎉" : "That was so much fun! 🎉");
-        }
-
-        function getRandomQuote() {
-            const list = i18n[state.lang].quotes[state.character];
-            return list[Math.floor(Math.random() * list.length)];
-        }
-
-        function triggerSpeech(text) {
-            document.getElementById('speech-bubble').innerText = text;
-        }
-
-        function updateUI() {
-            const t = i18n[state.lang];
-
-            // Labels
-            document.getElementById('ui-title').innerText = t.title;
-            document.getElementById('name-tung').innerText = t.tungName;
-            document.getElementById('name-kirk').innerText = t.kirkName;
-            document.getElementById('name-mirsab').innerText = t.mirsabName;
-            document.getElementById('label-hunger').innerText = t.hunger;
-            document.getElementById('label-hygiene').innerText = t.hygiene;
-            document.getElementById('label-happiness').innerText = t.happiness;
-            document.getElementById('btn-feed').innerText = t.feed;
-            document.getElementById('btn-wash').innerText = t.wash;
-            document.getElementById('btn-play').innerText = t.play;
-            document.getElementById('label-wardrobe').innerText = t.wardrobe;
-
-            document.getElementById('outfit-default').innerText = t.outfitDefault;
-            document.getElementById('outfit-fursuit').innerText = t.outfitFursuit;
-            document.getElementById('outfit-maid').innerText = t.outfitMaid;
-            document.getElementById('outfit-suit').innerText = t.outfitSuit;
-
-            // Avatars & Outfits
-            document.getElementById('character-avatar').innerText = avatars[state.character];
-            document.getElementById('outfit-badge').innerText = outfitBadges[state.outfit];
-
-            // Stat Values
-            document.getElementById('val-hunger').innerText = `${state.hunger}%`;
-            document.getElementById('val-hygiene').innerText = `${state.hygiene}%`;
-            document.getElementById('val-happiness').innerText = `${state.happiness}%`;
-
-            // Bar Widths
-            document.getElementById('bar-hunger').style.width = `${state.hunger}%`;
-            document.getElementById('bar-hygiene').style.width = `${state.hygiene}%`;
-            document.getElementById('bar-happiness').style.width = `${state.happiness}%`;
-        }
-
-        // Tamagotchi Status Decay (Every 5 seconds)
-        setInterval(() => {
-            state.hunger = Math.max(0, state.hunger - 3);
-            state.hygiene = Math.max(0, state.hygiene - 2);
-            state.happiness = Math.max(0, state.happiness - 2);
-            updateUI();
-        }, 5000);
-
-        // Initial setup
-        updateUI();
-    </script>
+function choose(type){
+  state={...state,type,food:75,clean:75,fun:75,energy:75,outfit:"default"};
+  document.getElementById("select").classList.remove("active");
+  document.getElementById("game").classList.add("active");
+  setLanguage(type==="mirsab");
+  render(); say(chars[type].speech);
+}
+function setLanguage(ar){
+  document.body.classList.toggle("arabic",ar);
+  const t=ar?{
+    main:"🥁 تونغ تونغ تونغ: نادي العناية",
+    sub:"أطعمه. اغسله. ألبسه. اجعله سعيداً.",
+    food:"الطعام",clean:"النظافة",fun:"المرح",energy:"الطاقة",
+    feed:"🍕 إطعام",wash:"🧼 غسل",play:"🎮 لعب",sleep:"😴 نوم",
+    ward:"👕 خزانة الملابس",wt:"اختر زياً. الملابس للزينة فقط.",
+    status:"✨ الحالة",back:"تغيير الشخصية"
+  }:{
+    main:"🥁 Tung Tung Tung: Tiny Care Club",sub:"Feed them. Wash them. Dress them. Keep them happy.",
+    food:"Food",clean:"Clean",fun:"Fun",energy:"Energy",feed:"🍕 Feed",wash:"🧼 Wash",play:"🎮 Play",sleep:"😴 Sleep",
+    ward:"👕 Wardrobe",wt:"Pick an outfit. Costumes are purely cosmetic.",status:"✨ Status",back:"← Change character"
+  };
+  mainTitle.textContent=t.main;subtitle.textContent=t.sub;foodLabel.textContent=t.food;cleanLabel.textContent=t.clean;
+  funLabel.textContent=t.fun;energyLabel.textContent=t.energy;feedBtn.textContent=t.feed;washBtn.textContent=t.wash;
+  playBtn.textContent=t.play;sleepBtn.textContent=t.sleep;wardrobeTitle.textContent=t.ward;wardrobeText.textContent=t.wt;
+  statusTitle.textContent=t.status;backBtn.textContent=t.back;
+}
+function render(){
+  const c=chars[state.type];
+  petName.textContent=c.name;
+  pet.textContent=c.emoji+(outfits[state.outfit]||"");
+  [["food",state.food],["clean",state.clean],["fun",state.fun],["energy",state.energy]].forEach(([id,v])=>{
+    document.getElementById(id).style.width=v+"%";document.getElementById(id+"N").textContent=Math.round(v);
+  });
+  let mood=Math.round((state.food+state.clean+state.fun+state.energy)/4);
+  status.textContent=state.type==="mirsab"
+    ? `المتوسط: ${mood}% — ${mood>70?"أنا سعيد جداً!":"أحتاج إلى بعض العناية."}`
+    : `Average: ${mood}% — ${mood>70?"Doing great!":"I need some care."}`;
+}
+function say(msg){speech.textContent=msg}
+function log(msg){const e=document.createElement("div");e.textContent="• "+msg;document.getElementById("log").prepend(e)}
+function act(a){
+  const ar=state.type==="mirsab";
+  if(a==="feed"){state.food=Math.min(100,state.food+20);state.energy=Math.min(100,state.energy+5);say(ar?"لذيذ! شكراً!":"Yum! Thanks!");log(ar?"تم تقديم الطعام.":"Fed a tasty snack.");}
+  if(a==="wash"){state.clean=Math.min(100,state.clean+28);state.fun=Math.min(100,state.fun+5);say(ar?"أنا نظيف الآن!":"Sparkly clean!");log(ar?"تم الغسل.":"Freshly washed.");}
+  if(a==="play"){state.fun=Math.min(100,state.fun+22);state.energy=Math.max(0,state.energy-10);say(ar?"هذا ممتع!":"That was fun!");log(ar?"لعبنا معاً.":"Played together.");}
+  if(a==="sleep"){state.energy=Math.min(100,state.energy+30);state.food=Math.max(0,state.food-6);say(ar?"تصبح على خير!":"Zzz...");log(ar?"أخذت قيلولة.":"Took a nap.");}
+  render();
+}
+function dress(name,btn){
+  state.outfit=name;document.querySelectorAll(".outfit").forEach(x=>x.classList.remove("selected"));btn.classList.add("selected");
+  const ar=state.type==="mirsab";say(ar?"زي جديد!":"New outfit!");
+  log(ar?"تم تغيير الزي.":"Outfit changed.");render();
+}
+function backToSelect(){document.getElementById("game").classList.remove("active");document.getElementById("select").classList.add("active");document.body.classList.remove("arabic")}
+setInterval(()=>{
+  if(!document.getElementById("game").classList.contains("active"))return;
+  state.food=Math.max(0,state.food-.6);state.clean=Math.max(0,state.clean-.35);state.fun=Math.max(0,state.fun-.45);state.energy=Math.max(0,state.energy-.2);render();
+},5000);
+</script>
 </body>
 </html>
